@@ -1,0 +1,85 @@
+#include <GL/glut.h>
+#include <math.h>
+#include <stdio.h>
+
+float tx = 0, ty = 0;   // Translation
+float angle = 0;        // Rotation
+float scale = 1;        // Scaling
+
+int shape; // 1=triangle, 2=square, 3=circle
+
+void display() {
+    glClear(GL_COLOR_BUFFER_BIT);
+    glLoadIdentity();
+
+    // Transformation
+    glTranslatef(tx, ty, 0);
+    glRotatef(angle, 0, 0, 1);
+    glScalef(scale, scale, 1);
+
+    // 🔷 Shape drawing
+    if(shape == 1) {
+        // Triangle
+        glBegin(GL_TRIANGLES);
+            glColor3f(1, 0, 0);
+            glVertex2f(0, 0.5);
+            glVertex2f(-0.5, -0.5);
+            glVertex2f(0.5, -0.5);
+        glEnd();
+    }
+    else if(shape == 2) {
+        // Square
+        glBegin(GL_QUADS);
+            glColor3f(0, 0, 1);
+            glVertex2f(-0.5, 0.5);
+            glVertex2f(0.5, 0.5);
+            glVertex2f(0.5, -0.5);
+            glVertex2f(-0.5, -0.5);
+        glEnd();
+    }
+    else if(shape == 3) {
+        // Circle
+        glBegin(GL_TRIANGLE_FAN);
+            glColor3f(0, 1, 0);
+            glVertex2f(0, 0);
+            for(int i = 0; i <= 100; i++) {
+                float a = 2 * 3.1416 * i / 100;
+                glVertex2f(cos(a)*0.5, sin(a)*0.5);
+            }
+        glEnd();
+    }
+
+    glFlush();
+}
+
+void keyboard(unsigned char key, int x, int y) {
+    switch(key) {
+        case 'a': tx -= 0.1; break;
+        case 'd': tx += 0.1; break;
+        case 'w': ty += 0.1; break;
+        case 's': ty -= 0.1; break;
+        case 'r': angle += 10; break;
+        case '+': scale += 0.1; break;
+        case '-': scale -= 0.1; break;
+    }
+    glutPostRedisplay();
+}
+
+int main(int argc, char** argv) {
+
+    // 🔹 User Input
+    printf("Select Shape:\n");
+    printf("1 = Triangle\n2 = Square\n3 = Circle\n");
+    scanf("%d", &shape);
+
+    glutInit(&argc, argv);
+    glutCreateWindow("Transformation with Shape");
+    glutInitWindowSize(500, 500);
+    gluOrtho2D(-2, 2, -2, 2);
+
+    glutDisplayFunc(display);
+    glutKeyboardFunc(keyboard);
+
+    glutMainLoop();
+    return 0;
+}
